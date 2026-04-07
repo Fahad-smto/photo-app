@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PhotoGrid from "@/components/PhotoGrid";
 import { Camera, Heart, Share2 } from "lucide-react";
 import Link from "next/link";
+import PhotoGrid from "./components/PhotoGrid";
 
 interface Photo {
   id: string;

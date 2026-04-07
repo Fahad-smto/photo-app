@@ -1,5 +1,6 @@
 import ImageCard from "./ImageCard";
 
+
 interface Photo {
   id: string;
   url: string;

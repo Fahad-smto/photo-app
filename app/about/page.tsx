@@ -29,7 +29,7 @@ export default function AboutPage() {
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">About PhotoUpload</h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          We're on a mission to make photo sharing simple, beautiful, and accessible
+          We&apos;re on a mission to make photo sharing simple, beautiful, and accessible
           for everyone.
         </p>
       </div>
@@ -48,7 +48,7 @@ export default function AboutPage() {
             who want to share their memories with loved ones.
           </p>
           <p className="text-gray-600">
-            Today, we're proud to host thousands of photos and facilitate millions of
+            Today, we&apos;re proud to host thousands of photos and facilitate millions of
             views, all while maintaining our commitment to simplicity, security, and
             user experience.
           </p>
