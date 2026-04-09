@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 export default function UploadPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -30,39 +29,67 @@ export default function UploadPage() {
   };
 
   const handleUpload = async () => {
-    if (files.length === 0) return;
+    if (files.length === 0) {
+      setError("Please select at least one file");
+      return;
+    }
 
     setUploading(true);
-    setUploadProgress(0);
     setError(null);
 
-    const formData = new FormData();
-    files.forEach((file) => {
-      formData.append("files", file);
-    });
+    // Upload files one by one
+    let successCount = 0;
+    
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+      try {
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (response.ok) {
-        setSuccess(true);
-        setTimeout(() => {
-          router.push("/");
-          router.refresh();
-        }, 2000);
-      } else {
-        throw new Error(data.error || "Upload failed");
+        if (response.ok) {
+          successCount++;
+          
+          // Save to localStorage for persistence
+          const existingPhotos = JSON.parse(localStorage.getItem("photos") || "[]");
+          const newPhoto = {
+            id: data.photo?.id || Date.now().toString(),
+            url: data.photo?.url,
+            display_url: data.photo?.display_url,
+            title: data.photo?.title || file.name,
+            createdAt: new Date().toISOString(),
+            likes: 0,
+            views: 0,
+          };
+          localStorage.setItem("photos", JSON.stringify([newPhoto, ...existingPhotos]));
+        } else {
+          throw new Error(data.error || "Upload failed");
+        }
+      } catch (err) {
+        console.error("Upload error:", err);
+        setError(`Failed to upload ${file.name}`);
       }
-    } catch (error) {
-      console.error("Upload error:", error);
-      setError("Failed to upload photos. Please try again.");
-    } finally {
-      setUploading(false);
+    }
+
+    setUploading(false);
+    
+    if (successCount === files.length) {
+      setSuccess(true);
+      setTimeout(() => {
+        router.push("/");
+        router.refresh();
+      }, 2000);
+    } else if (successCount > 0) {
+      setError(`Uploaded ${successCount} out of ${files.length} files`);
+      setTimeout(() => {
+        router.push("/");
+        router.refresh();
+      }, 2000);
     }
   };
 
@@ -71,7 +98,7 @@ export default function UploadPage() {
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Upload Photos</h1>
         <p className="text-lg text-gray-600">
-          Upload to ImgBB cloud storage
+          Drag & drop your images to upload to ImgBB
         </p>
       </div>
 
@@ -90,7 +117,7 @@ export default function UploadPage() {
           {/* Error Message */}
           {error && (
             <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-2">
-              <AlertCircle className="h-5 w-5 text-red-500" />
+              <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
               <p className="text-red-700">{error}</p>
             </div>
           )}
@@ -101,7 +128,7 @@ export default function UploadPage() {
             className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
               isDragActive
                 ? "border-blue-500 bg-blue-50"
-                : "border-gray-300 hover:border-blue-500"
+                : "border-gray-300 hover:border-blue-500 hover:bg-gray-50"
             }`}
           >
             <input {...getInputProps()} />
@@ -116,9 +143,12 @@ export default function UploadPage() {
                 <p className="text-sm text-gray-500">
                   or click to select files (Max 16MB per file)
                 </p>
-                <p className="text-xs text-gray-400 mt-2">
-                  Supports: JPEG, PNG, GIF, WebP
-                </p>
+                <div className="flex justify-center space-x-4 mt-4 text-xs text-gray-400">
+                  <span>JPEG</span>
+                  <span>PNG</span>
+                  <span>GIF</span>
+                  <span>WebP</span>
+                </div>
               </>
             )}
           </div>
@@ -126,10 +156,18 @@ export default function UploadPage() {
           {/* File Preview */}
           {files.length > 0 && (
             <div className="mt-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Selected Files ({files.length})
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Selected Files ({files.length})
+                </h3>
+                <button
+                  onClick={() => setFiles([])}
+                  className="text-sm text-red-600 hover:text-red-700"
+                >
+                  Clear all
+                </button>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {files.map((file, index) => (
                   <div key={index} className="relative group">
                     <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
@@ -141,13 +179,16 @@ export default function UploadPage() {
                       />
                       <button
                         onClick={() => removeFile(index)}
-                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
                       >
                         <X className="h-4 w-4" />
                       </button>
                     </div>
                     <p className="text-sm text-gray-600 mt-2 truncate">
                       {file.name}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {(file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
                 ))}
@@ -158,18 +199,18 @@ export default function UploadPage() {
                 <button
                   onClick={handleUpload}
                   disabled={uploading}
-                  className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center space-x-2"
                 >
                   {uploading ? (
-                    <span className="flex items-center space-x-2">
-                      <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                       <span>Uploading to ImgBB...</span>
-                    </span>
+                    </>
                   ) : (
-                    <span className="flex items-center space-x-2">
+                    <>
                       <Upload className="h-5 w-5" />
-                      <span>Upload to ImgBB</span>
-                    </span>
+                      <span>Upload {files.length} Photo(s) to ImgBB</span>
+                    </>
                   )}
                 </button>
               </div>
