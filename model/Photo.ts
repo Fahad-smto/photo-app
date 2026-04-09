@@ -1,4 +1,4 @@
-import { Photo } from "@/app/lib/types";
+import { Photo } from "@/lib/types";
 
  
 
