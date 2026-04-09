@@ -1,20 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PhotoGrid from "./components/PhotoGrid";
 import { Camera, Heart, Share2 } from "lucide-react";
 import Link from "next/link";
+import PhotoGrid from "./components/PhotoGrid";
 
 interface Photo {
   id: string;
   url: string;
-  display_url: string;
   title: string;
-  filename: string;
-  size: number;
-  uploadedAt: string;
-  views: number;
-  likes: number;
+  createdAt: string;
 }
 
 export default function HomePage() {
@@ -45,7 +40,7 @@ export default function HomePage() {
           Share Your <span className="text-blue-600">Beautiful Moments</span>
         </h1>
         <p className="text-xl text-gray-600 mb-8">
-          Upload to ImgBB cloud and share with the world
+          Upload, share, and discover amazing photos from our community
         </p>
         <Link
           href="/upload"
@@ -60,26 +55,22 @@ export default function HomePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
         <div className="bg-white rounded-lg p-6 text-center shadow-md">
           <Camera className="h-10 w-10 text-blue-600 mx-auto mb-3" />
-          <h3 className="text-2xl font-bold text-gray-900">{photos.length}+</h3>
+          <h3 className="text-2xl font-bold text-gray-900">1,234+</h3>
           <p className="text-gray-600">Photos Uploaded</p>
         </div>
         <div className="bg-white rounded-lg p-6 text-center shadow-md">
           <Heart className="h-10 w-10 text-red-500 mx-auto mb-3" />
-          <h3 className="text-2xl font-bold text-gray-900">
-            {photos.reduce((sum, photo) => sum + photo.likes, 0)}+
-          </h3>
-          <p className="text-gray-600">Total Likes</p>
+          <h3 className="text-2xl font-bold text-gray-900">5,678+</h3>
+          <p className="text-gray-600">Likes Received</p>
         </div>
         <div className="bg-white rounded-lg p-6 text-center shadow-md">
           <Share2 className="h-10 w-10 text-green-500 mx-auto mb-3" />
-          <h3 className="text-2xl font-bold text-gray-900">
-            {photos.reduce((sum, photo) => sum + photo.views, 0)}+
-          </h3>
-          <p className="text-gray-600">Total Views</p>
+          <h3 className="text-2xl font-bold text-gray-900">9,012+</h3>
+          <p className="text-gray-600">Shares</p>
         </div>
       </div>
 
-      {/* Photos Grid */}
+      {/* Recent Photos Section */}
       <div className="mb-12">
         <h2 className="text-3xl font-bold text-gray-900 mb-6">Recent Photos</h2>
         {loading ? (
