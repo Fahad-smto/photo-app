@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { Upload, X, Image as ImageIcon, CheckCircle } from "lucide-react";
+import { Upload, X, Image as ImageIcon, CheckCircle, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -11,16 +11,18 @@ export default function UploadPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
       setFiles((prev) => [...prev, ...acceptedFiles]);
+      setError(null);
     },
     accept: {
       "image/*": [".jpeg", ".jpg", ".png", ".gif", ".webp"],
     },
-    maxSize: 5 * 1024 * 1024, // 5MB
+    maxSize: 16 * 1024 * 1024, // 16MB (ImgBB limit)
   });
 
   const removeFile = (index: number) => {
@@ -32,6 +34,7 @@ export default function UploadPage() {
 
     setUploading(true);
     setUploadProgress(0);
+    setError(null);
 
     const formData = new FormData();
     files.forEach((file) => {
@@ -44,6 +47,8 @@ export default function UploadPage() {
         body: formData,
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         setSuccess(true);
         setTimeout(() => {
@@ -51,11 +56,11 @@ export default function UploadPage() {
           router.refresh();
         }, 2000);
       } else {
-        throw new Error("Upload failed");
+        throw new Error(data.error || "Upload failed");
       }
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to upload photos. Please try again.");
+      setError("Failed to upload photos. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -66,7 +71,7 @@ export default function UploadPage() {
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Upload Photos</h1>
         <p className="text-lg text-gray-600">
-          Share your memories with the world
+          Upload to ImgBB cloud storage
         </p>
       </div>
 
@@ -77,11 +82,19 @@ export default function UploadPage() {
             Upload Successful!
           </h2>
           <p className="text-green-600">
-            Redirecting you to the home page...
+            Your photos have been uploaded to ImgBB. Redirecting...
           </p>
         </div>
       ) : (
         <>
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-2">
+              <AlertCircle className="h-5 w-5 text-red-500" />
+              <p className="text-red-700">{error}</p>
+            </div>
+          )}
+
           {/* Dropzone */}
           <div
             {...getRootProps()}
@@ -101,7 +114,7 @@ export default function UploadPage() {
                   Drag & drop your photos here
                 </p>
                 <p className="text-sm text-gray-500">
-                  or click to select files (Max 5MB per file)
+                  or click to select files (Max 16MB per file)
                 </p>
                 <p className="text-xs text-gray-400 mt-2">
                   Supports: JPEG, PNG, GIF, WebP
@@ -150,12 +163,12 @@ export default function UploadPage() {
                   {uploading ? (
                     <span className="flex items-center space-x-2">
                       <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
-                      <span>Uploading... {uploadProgress}%</span>
+                      <span>Uploading to ImgBB...</span>
                     </span>
                   ) : (
                     <span className="flex items-center space-x-2">
                       <Upload className="h-5 w-5" />
-                      <span>Upload {files.length} Photo(s)</span>
+                      <span>Upload to ImgBB</span>
                     </span>
                   )}
                 </button>
