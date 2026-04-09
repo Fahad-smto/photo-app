@@ -1,0 +1,12 @@
+model Photo {
+  id          String   @id
+  url         String
+  display_url String
+  delete_url  String
+  title       String
+  filename    String
+  size        Int
+  uploadedAt  DateTime @default(now())
+  views       Int      @default(0)
+  likes       Int      @default(0)
+}
