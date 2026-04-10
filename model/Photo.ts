@@ -1,47 +1,16 @@
-import { Photo } from "@/lib/types";
+import mongoose from 'mongoose';
 
- 
+const PhotoSchema = new mongoose.Schema({
+  imgbbId: { type: String, required: true, unique: true },
+  url: { type: String, required: true },
+  displayUrl: { type: String, required: true },
+  deleteUrl: { type: String },
+  title: { type: String, required: true },
+  filename: { type: String, required: true },
+  size: { type: Number, required: true },
+  views: { type: Number, default: 0 },
+  likes: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+});
 
-// In-memory storage (replace with database in production)
-class PhotoModel {
-  private photos: Map<string, Photo> = new Map();
-
-  save(photo: Photo): Photo {
-    this.photos.set(photo.id, photo);
-    return photo;
-  }
-
-  findById(id: string): Photo | undefined {
-    return this.photos.get(id);
-  }
-
-  findAll(): Photo[] {
-    return Array.from(this.photos.values()).sort(
-      (a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
-    );
-  }
-
-  delete(id: string): boolean {
-    return this.photos.delete(id);
-  }
-
-  updateLikes(id: string, increment: boolean): Photo | undefined {
-    const photo = this.photos.get(id);
-    if (photo) {
-      photo.likes += increment ? 1 : -1;
-      this.photos.set(id, photo);
-      return photo;
-    }
-    return undefined;
-  }
-
-  incrementViews(id: string): void {
-    const photo = this.photos.get(id);
-    if (photo) {
-      photo.views += 1;
-      this.photos.set(id, photo);
-    }
-  }
-}
-
-export const photoModel = new PhotoModel();
+export default mongoose.models.Photo || mongoose.model('Photo', PhotoSchema);
