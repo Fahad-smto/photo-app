@@ -98,7 +98,17 @@ export default function AboutPage() {
         </div>
       </div>
 
-   
+      <div className="bg-gray-100 rounded-lg p-8 text-center">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          Ready to Share Your Photos?
+        </h2>
+        <p className="text-gray-600 mb-6">
+          Join our community of photographers and start sharing your moments today.
+        </p>
+        <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+          Get Started Now
+        </button>
+      </div>
     </div>
   );
 }
