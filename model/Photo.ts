@@ -12,6 +12,3 @@ const PhotoSchema = new mongoose.Schema({
   likes: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
 });
-
-// মডেলটি ইতিমধ্যে তৈরি থাকলে পুনরায় তৈরি না করা
-export default mongoose.models.Photo || mongoose.model('Photo', PhotoSchema);
