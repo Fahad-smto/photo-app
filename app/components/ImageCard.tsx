@@ -1,5 +1,9 @@
 "use client";
 
+import Image from "next/image";
+import { useState } from "react";
+import { Heart, Calendar, Eye } from "lucide-react";
+
 interface Photo {
   id: string;
   url: string;
