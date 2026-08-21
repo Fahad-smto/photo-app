@@ -68,7 +68,7 @@ export class ImgBBService {
       return true;
     } catch (error) {
       console.error('Delete error:', error);
-    
+      return false;
     }
   }
 }
