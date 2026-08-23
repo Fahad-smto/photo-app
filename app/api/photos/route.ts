@@ -10,11 +10,6 @@ export async function GET() {
     await connectToDatabase();
     console.log("2. MongoDB connected");
     
-    // ফটোগুলো খুঁজে বের করুন
-    const photos = await Photo.find({})
-      .sort({ createdAt: -1 })
-      .limit(50);
-    
     console.log("3. Photos found:", photos.length);
     
     return NextResponse.json(photos);
