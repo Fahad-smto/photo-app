@@ -20,12 +20,6 @@ export async function GET() {
     return NextResponse.json(photos);
   } catch (error: any) {
     console.error("Error in /api/photos:", error);
-    return NextResponse.json(
-      { 
-        error: error.message || 'Failed to fetch photos',
-        details: error.toString()
-      },
-      { status: 500 }
-    );
+  
   }
 }
