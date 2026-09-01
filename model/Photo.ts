@@ -1,4 +1,4 @@
-
+import mongoose from 'mongoose';
 
 const PhotoSchema = new mongoose.Schema({
   imgbbId: { type: String, required: true, unique: true },
