@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Photo from '@/model/Photo';
 
+export async function GET() {
   try {
     console.log("1. API called - fetching photos");
     
