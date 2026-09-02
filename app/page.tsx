@@ -113,7 +113,12 @@ export default function HomePage() {
 
         * { box-sizing: border-box; }
 
-    
+        body {
+          font-family: 'DM Sans', sans-serif;
+          background: #f9f7f4;
+          color: #1a1a1a;
+          margin: 0;
+        }
 
         .serif { font-family: 'Cormorant Garamond', serif; }
 
