@@ -2,9 +2,6 @@ import ImageCard from "./ImageCard";
 
 
 
-interface PhotoGridProps {
-  photos: Photo[];
-}
 
 export default function PhotoGrid({ photos }: PhotoGridProps) {
   if (photos.length === 0) {
