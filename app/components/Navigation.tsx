@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { Camera, Home, Upload } from "lucide-react";
 
 export default function Navigation() {
-  
+  const pathname = usePathname();
+
   return (
     <>
       <style>{`
