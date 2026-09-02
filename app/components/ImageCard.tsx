@@ -14,6 +14,9 @@ interface Photo {
   views: number;
 }
 
+interface ImageCardProps {
+  photo: Photo;
+}
 
 export default function ImageCard({ photo }: ImageCardProps) {
   const [liked, setLiked] = useState(false);
