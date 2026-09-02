@@ -120,6 +120,7 @@ export default function HomePage() {
           margin: 0;
         }
 
+        .serif { font-family: 'Cormorant Garamond', serif; }
 
         .nav {
           position: fixed;
